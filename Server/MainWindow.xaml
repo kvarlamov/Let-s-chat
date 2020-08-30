@@ -1,0 +1,76 @@
+﻿<Window x:Class="Server.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Server"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="600">
+    <Window.Resources>
+        <local:BooleanToStartStopConverter x:Key="BooleanToStartStopConverter" />
+        <local:BooleanToServerStatusMessage x:Key="BooleanToServerStatusMessageConverter" />
+        <local:BooleanToBrush x:Key="BooleanToColorConverter" />
+        <Style TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+    </Window.Resources>
+    <DockPanel Margin=" 0 10 0 0">
+        <StatusBar Height="25" DockPanel.Dock="Bottom">
+            <StatusBarItem>
+                <TextBlock Text="{Binding Path=IsRunning,Converter={StaticResource BooleanToServerStatusMessageConverter}}"
+                           Background="{Binding Path=IsRunning,Converter={StaticResource BooleanToColorConverter}}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock>
+                    <Run Text="Active users: "/>
+                    <Run Text="{Binding Path=EMPTY}"/>
+                </TextBlock>
+            </StatusBarItem>
+        </StatusBar>
+        <DockPanel DockPanel.Dock="Left" MinWidth="150">
+            <DockPanel>
+                <Grid IsEnabled="{Binding Path=IsStopped}" DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Text="IP adress:"/>
+                    <TextBox Grid.Column="1" Grid.Row="0" 
+                             Text="{Binding Path=IpAddress, UpdateSourceTrigger=PropertyChanged}" 
+                             IsEnabled="{Binding Path=IsStopped}"/>
+                    <TextBlock Grid.Column="0" Grid.Row="1" Text="Port:"/>
+                    <TextBox Grid.Column="1" Grid.Row="1" 
+                             Text="{Binding Path=Port, UpdateSourceTrigger=PropertyChanged}" 
+                             IsEnabled="{Binding Path=IsStopped}"/>
+                </Grid>
+                <Button DockPanel.Dock="Top" Click="Button_Click" Grid.ColumnSpan="2" Grid.Row="2"
+                            Content="{Binding Path=IsRunning,Converter={StaticResource BooleanToStartStopConverter}}"/>
+                <TextBlock DockPanel.Dock="Top" Text="Connected clients" TextAlignment="Center"/>
+                <ListBox ItemsSource="{Binding Clients}" DisplayMemberPath="Name"/>
+            </DockPanel>
+        </DockPanel>
+        <ListBox ItemsSource="{Binding ChatList}"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+    </DockPanel>
+</Window>

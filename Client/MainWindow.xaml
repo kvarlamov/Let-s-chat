@@ -1,0 +1,116 @@
+﻿<Window x:Class="Client.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Client"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="600">
+    <Window.Resources>
+        <local:BooleanToBrushConverter x:Key="BooleanToColorConverter"/>
+        <local:BooleanToConnectDisconnectConverter x:Key="BooleanToConnectDisconnectConverter" />
+        <local:BooleanToClientStatusMessageConverter x:Key="BooleanToClientStatusMessageConverter" />
+        <Style TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Height" Value="20"/>
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+        <Style TargetType="ListBox">
+            <Setter Property="Margin" Value="3"/>
+        </Style>
+    </Window.Resources>
+    <DockPanel Margin=" 0 10 0 0">
+        <Grid DockPanel.Dock="Left" MinWidth="150">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <DockPanel>
+                <Grid IsEnabled="{Binding Path=IsStopped}" DockPanel.Dock="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Column="0" Grid.Row="0" Text="IP adress:"/>
+                    <TextBox Grid.Column="1" Grid.Row="0" 
+                             Text="{Binding Path=IpAddress, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                             IsEnabled="{Binding Path=IsStopped}"/>
+                    <TextBlock Grid.Column="0" Grid.Row="1" Text="Port:"/>
+                    <TextBox Grid.Column="1" Grid.Row="1" 
+                             Text="{Binding Path=Port, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                             IsEnabled="{Binding Path=IsStopped}"/>
+                    <TextBlock Grid.Column="0" Grid.Row="2" Text="Name:"/>
+                    <TextBox Grid.Column="1" Grid.Row="2" 
+                             Text="{Binding Path=Name, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                             IsEnabled="{Binding Path=IsStopped}"/>
+                </Grid>
+                <Button DockPanel.Dock="Top" Click="Button_Click" 
+                            IsEnabled="{Binding NotEmptyFields, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            Content="{Binding Path=IsRunning,Converter={StaticResource BooleanToConnectDisconnectConverter}}"/>
+                <TextBlock DockPanel.Dock="Top" Text="Connected clients" TextAlignment="Center"/>
+                <ListBox ItemsSource="{Binding Clients}" DisplayMemberPath="Name"/>
+            </DockPanel>
+            <StatusBar Grid.Row="1"  Margin="3 0 3 5">
+                <StatusBarItem>
+                    <TextBlock Text="{Binding Path=IsRunning,Converter={StaticResource BooleanToClientStatusMessageConverter}}"
+                           Background="{Binding Path=IsRunning,Converter={StaticResource BooleanToColorConverter}}"/>
+                </StatusBarItem>
+                <Separator/>
+                <StatusBarItem>
+                    <TextBlock>
+                    <Run Text="Active users: "/>
+                    <!--<Run Text="{Binding Path=EMPTY}"/>-->
+                    </TextBlock>
+                </StatusBarItem>
+            </StatusBar>
+        </Grid>
+        <Grid IsEnabled="{Binding Path=IsRunning}" DockPanel.Dock="Right" Width="400">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition Height="30"/>
+            </Grid.RowDefinitions>
+            <ListBox Grid.Row="0"  ItemsSource="{Binding ChatList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" 
+                     Margin="5 3 5 4"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     Width="390">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Height" Value="auto"/>
+                        <Setter Property="Width" Value="380"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Grid Grid.Row="1" DockPanel.Dock="Bottom">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <TextBox Text="{Binding Message, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" KeyDown="UIElement_OnKeyDown" Height="25" Margin="5 0 0 3"/>
+                <Button Grid.Column="1" Margin=" 3 0 5 3" Height="25" VerticalAlignment="Center" Content="Send" Click="Button_Click_1"/>
+            </Grid>
+        </Grid>
+    </DockPanel>
+</Window>
